@@ -1,5 +1,6 @@
 # Step 1: 使用官方 runners 镜像作为基础
-FROM n8nio/runners:2.6.1
+ARG runners_tag=2.6.1
+FROM n8nio/runners:${runners_tag}
 
 # Step 2: 切换到 root 用户以便安装
 USER root
