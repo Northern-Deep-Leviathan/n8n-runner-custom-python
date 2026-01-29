@@ -1,0 +1,42 @@
+name: n8n runner with custom python Docker Image CI
+
+on:
+  workflow_dispatch:
+    inputs: 
+      image_tag: 
+        description: 'Docker image tag e.g., 1.0.0' 
+        required: true
+        default: 'latest'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: ｜
+        IMAGE_TAG=${{ github.event.inputs.image_tag }}
+        docker build . --file Dockerfile --tag n8n_runners_python_custom:${IMAGE_TAG}
+      
+    - name: Login to ACR
+      run: |
+        docker login \
+        --username=${{ secrets.ACR_USER }} \
+        --password=${{ secrets.ACR_PASS }} \
+        crpi-w72gai2ftbv7emtr.cn-shanghai.personal.cr.aliyuncs.com
+
+    - name: Tag for ACR
+      run: |
+        IMAGE_TAG=${{ github.event.inputs.image_tag }}
+        docker tag n8n_runners_python_custom:${IMAGE_TAG} \
+          crpi-w72gai2ftbv7emtr.cn-shanghai.personal.cr.aliyuncs.com/n8n_cerelogic/n8n_runners:${IMAGE_TAG}
+
+    - name: Push to ACR
+      run: |
+        IMAGE_TAG=${{ github.event.inputs.image_tag }}
+        docker push crpi-w72gai2ftbv7emtr.cn-shanghai.personal.cr.aliyuncs.com/n8n_cerelogic/n8n_runners:${IMAGE_TAG}
+
+
