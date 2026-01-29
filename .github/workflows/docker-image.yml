@@ -7,6 +7,10 @@ on:
         description: 'Docker image tag e.g., 1.0.0' 
         required: true
         default: 'latest'
+      n8n_runner_tag: 
+        description: 'original n8n runner tag e.g., 1.0.0' 
+        required: true
+        default: 'latest'
 
 jobs:
 
@@ -19,7 +23,11 @@ jobs:
     - name: Build the Docker image
       run: ｜
         IMAGE_TAG=${{ github.event.inputs.image_tag }}
-        docker build . --file Dockerfile --tag n8n_runners_python_custom:${IMAGE_TAG}
+        N8N_RUNNER_TAG=${{ github.event.inputs.n8n_runner_tag }}
+        docker build . \
+          --file Dockerfile \
+          --tag n8n_runners_python_custom:${IMAGE_TAG} \
+          --build-arg runners_tag=${N8N_RUNNER_TAG}
       
     - name: Login to ACR
       run: |
